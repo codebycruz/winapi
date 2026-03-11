@@ -10,6 +10,10 @@ ffi.cdef([[#embed "user32/ffi/ffidefs.h"]])
 ---@field SetWindowTextA fun(hWnd: winapi.user32.ffi.HWND, lpString: string): number
 ---@field RegisterClassExA fun(lpWndClass: winapi.user32.ffi.WNDCLASSEXA): number
 ---@field UnregisterClassA fun(lpClassName: string, hInstance: ffi.cdata*): number
+---@field IsWindow fun(hWnd: winapi.user32.ffi.HWND): number
+---@field GetClientRect fun(hWnd: winapi.user32.ffi.HWND, lpRect: winapi.user32.ffi.RECT): number
+---@field GetWindowTextA fun(hWnd: winapi.user32.ffi.HWND, lpString: ffi.cdata*, nMaxCount: number): number
+---@field IsWindowVisible fun(hWnd: winapi.user32.ffi.HWND): number
 ---@field SetCursor fun(hCursor: ffi.cdata*): ffi.cdata*
 ---@field PeekMessageA fun(lpMsg: ffi.cdata*, hWnd: ffi.cdata*, wMsgFilterMin: number, wMsgFilterMax: number, wRemoveMsg: number): number
 ---@field GetMessageA fun(lpMsg: ffi.cdata*, hWnd: ffi.cdata*, wMsgFilterMin: number, wMsgFilterMax: number): number
@@ -52,6 +56,8 @@ user32.getSysColorBrush = C.GetSysColorBrush
 user32.getKeyState = C.GetKeyState
 user32.getAsyncKeyState = C.GetAsyncKeyState
 user32.setCapture = C.SetCapture
+user32.isWindow = C.IsWindow
+user32.isWindowVisible = C.IsWindowVisible
 
 ---@param wnd winapi.user32.ffi.HWND
 ---@param show winapi.user32.ShowWindow
@@ -102,6 +108,26 @@ end
 ---@return boolean
 function user32.releaseCapture()
 	return C.ReleaseCapture() ~= 0
+end
+
+---@param hwnd winapi.user32.ffi.HWND
+---@param rect winapi.user32.ffi.RECT
+---@return boolean
+function user32.getClientRect(hwnd, rect)
+	return C.GetClientRect(hwnd, rect) ~= 0
+end
+
+---@param hwnd winapi.user32.ffi.HWND
+---@param maxCount number?
+---@return string
+function user32.getWindowText(hwnd, maxCount)
+	maxCount = maxCount or 256
+	local buffer = ffi.new("char[?]", maxCount)
+	local len = C.GetWindowTextA(hwnd, buffer, maxCount)
+	if len == 0 then
+		return ""
+	end
+	return ffi.string(buffer, len)
 end
 
 ---@type fun(): winapi.user32.ffi.MSG
