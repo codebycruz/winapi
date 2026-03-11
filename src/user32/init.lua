@@ -85,7 +85,7 @@ end
 ---@type fun(): winapi.user32.ffi.RECT
 user32.Rect = ffi.typeof("RECT") ---@diagnostic disable-line # ffi.cast isn't typed properly
 
----@type fun(s: winapi.user32.ffi.LPCSTR|integer?): winapi.user32.ffi.LPCSTR
+---@type fun(s: winapi.user32.ffi.LPCSTR?): winapi.user32.ffi.LPCSTR
 user32.LPCSTR = ffi.typeof("LPCSTR") ---@diagnostic disable-line # ffi.cast isn't typed properly
 
 -- Load and merge enums

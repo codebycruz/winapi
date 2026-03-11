@@ -7,13 +7,13 @@ return function(user32)
 
 	---@enum winapi.user32.IDC
 	enums.IDC = {
-		ARROW = user32.LPCSTR(32512),
-		HAND = user32.LPCSTR(32649),
+		ARROW = user32.LPCSTR(ffi.cast("const char*", 32512)),
+		HAND = user32.LPCSTR(ffi.cast("const char*", 32649)),
 	}
 
 	---@enum winapi.user32.IDI
 	enums.IDI = {
-		APPLICATION = user32.LPCSTR(32512),
+		APPLICATION = user32.LPCSTR(ffi.cast("const char*", 32512)),
 	}
 
 	---@enum winapi.user32.COLOR
