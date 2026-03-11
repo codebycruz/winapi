@@ -94,31 +94,31 @@ user32.LPCSTR = ffi.typeof("LPCSTR") ---@diagnostic disable-line # ffi.cast isn'
 ---@param lParam winapi.user32.ffi.LPARAM
 ---@return number
 function user32.GET_X_LPARAM(lParam)
-	return ffi.cast("short", bit.band(tonumber(lParam), 0xFFFF))
+	return ffi.cast("short", bit.band(lParam, 0xFFFF))
 end
 
 ---@param lParam winapi.user32.ffi.LPARAM
 ---@return number
 function user32.GET_Y_LPARAM(lParam)
-	return ffi.cast("short", bit.rshift(tonumber(lParam), 16))
+	return ffi.cast("short", bit.rshift(lParam, 16))
 end
 
 ---@param value winapi.user32.ffi.WPARAM|winapi.user32.ffi.LPARAM
 ---@return number
 function user32.LOWORD(value)
-	return bit.band(tonumber(value), 0xFFFF)
+	return bit.band(value, 0xFFFF)
 end
 
 ---@param value winapi.user32.ffi.WPARAM|winapi.user32.ffi.LPARAM
 ---@return number
 function user32.HIWORD(value)
-	return bit.rshift(tonumber(value), 16)
+	return bit.rshift(value, 16)
 end
 
 ---@param wParam winapi.user32.ffi.WPARAM
 ---@return number
 function user32.GET_WHEEL_DELTA_WPARAM(wParam)
-	return ffi.cast("short", bit.rshift(tonumber(wParam), 16))
+	return ffi.cast("short", bit.rshift(wParam, 16))
 end
 
 -- Load and merge enums
