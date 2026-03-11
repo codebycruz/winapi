@@ -56,8 +56,6 @@ user32.getSysColorBrush = C.GetSysColorBrush
 user32.getKeyState = C.GetKeyState
 user32.getAsyncKeyState = C.GetAsyncKeyState
 user32.setCapture = C.SetCapture
-user32.isWindow = C.IsWindow
-user32.isWindowVisible = C.IsWindowVisible
 
 ---@param wnd winapi.user32.ffi.HWND
 ---@param show winapi.user32.ShowWindow
@@ -128,6 +126,18 @@ function user32.getWindowText(hwnd, maxCount)
 		return ""
 	end
 	return ffi.string(buffer, len)
+end
+
+---@param hwnd winapi.user32.ffi.HWND
+---@return boolean
+function user32.isWindow(hwnd)
+	return C.IsWindow(hwnd) ~= 0
+end
+
+---@param hwnd winapi.user32.ffi.HWND
+---@return boolean
+function user32.isWindowVisible(hwnd)
+	return C.IsWindowVisible(hwnd) ~= 0
 end
 
 ---@type fun(): winapi.user32.ffi.MSG
