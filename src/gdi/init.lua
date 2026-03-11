@@ -2,59 +2,46 @@ local ffi = require("ffi")
 
 ffi.cdef([[#embed "gdi/ffi/ffidefs.h"]])
 
----@class gdi.PIXELFORMATDESCRIPTOR: ffi.cdata*
----@field nSize number
----@field nVersion number
----@field dwFlags number
----@field iPixelType number
----@field cColorBits number
----@field cRedBits number
----@field cRedShift number
----@field cGreenBits number
----@field cGreenShift number
----@field cBlueBits number
----@field cBlueShift number
----@field cAlphaBits number
----@field cAlphaShift number
----@field cAccumBits number
----@field cAccumRedBits number
----@field cAccumGreenBits number
----@field cAccumBlueBits number
----@field cAccumAlphaBits number
----@field cDepthBits number
----@field cStencilBits number
----@field cAuxBuffers number
----@field iLayerType number
-
+---@class winapi.gdi.Fns
+---@field ChoosePixelFormat fun(hdc: winapi.gdi.ffi.HDC, ppfd: winapi.gdi.ffi.PIXELFORMATDESCRIPTOR): number
+---@field SetPixelFormat fun(hdc: winapi.gdi.ffi.HDC, iPixelFormat: number, ppfd: winapi.gdi.ffi.PIXELFORMATDESCRIPTOR): number
+---@field SwapBuffers fun(hdc: winapi.gdi.ffi.HDC): nil
 local C = ffi.load("gdi32")
 
-return {
-	---@type fun(hdc: user32.HDC, ppfd: gdi.PIXELFORMATDESCRIPTOR): integer
-	choosePixelFormat = C.ChoosePixelFormat,
+---@class winapi.gdi: winapi.gdi.Enums
+local gdi = {}
 
-	---@type fun(hdc: user32.HDC, iPixelFormat: integer, ppfd: gdi.PIXELFORMATDESCRIPTOR): boolean
-	setPixelFormat = C.SetPixelFormat,
+local enums = require("winapi.gdi.ffi.enums")(gdi)
+for k, v in pairs(enums) do
+	gdi[k] = v
+end
 
-	---@type fun(hdc: user32.HDC)
-	swapBuffers = C.SwapBuffers,
+gdi.choosePixelFormat = C.ChoosePixelFormat
+gdi.swapBuffers = C.SwapBuffers
 
-	PFD_DRAW_TO_WINDOW = 0x00000004,
-	PFD_SUPPORT_OPENGL = 0x00000020,
-	PFD_TYPE_RGBA = 0,
-	PFD_MAIN_PLANE = 0,
+---@param hdc winapi.gdi.ffi.HDC
+---@param iPixelFormat number
+---@param ppfd winapi.gdi.ffi.PIXELFORMATDESCRIPTOR
+---@return boolean
+function gdi.setPixelFormat(hdc, iPixelFormat, ppfd)
+	return C.SetPixelFormat(hdc, iPixelFormat, ppfd) ~= 0
+end
 
-	---@type fun(): gdi.PIXELFORMATDESCRIPTOR
-	newPFD = function()
-		---@diagnostic disable-next-line: missing-return-value # ffi.new isn't typed properly for some reason
-		return ffi.new("PIXELFORMATDESCRIPTOR", {
-			nSize = ffi.sizeof("PIXELFORMATDESCRIPTOR"),
-			nVersion = 1,
-			dwFlags = 0x00000004 + 0x00000020,
-			iPixelType = 0,
-			cColorBits = 32,
-			cDepthBits = 24,
-			cStencilBits = 8,
-			iLayerType = 0,
-		})
-	end,
-}
+---@type fun(): winapi.gdi.ffi.PIXELFORMATDESCRIPTOR
+gdi.PixelFormatDescriptor = ffi.typeof("PIXELFORMATDESCRIPTOR") ---@diagnostic disable-line # ffi.typeof isn't typed properly
+
+---@return winapi.gdi.ffi.PIXELFORMATDESCRIPTOR
+function gdi.NewPFD()
+	return ffi.new("PIXELFORMATDESCRIPTOR", {
+		nSize = ffi.sizeof("PIXELFORMATDESCRIPTOR"),
+		nVersion = 1,
+		dwFlags = gdi.PFD_DRAW_TO_WINDOW + gdi.PFD_SUPPORT_OPENGL,
+		iPixelType = gdi.PFD_TYPE_RGBA,
+		cColorBits = 32,
+		cDepthBits = 24,
+		cStencilBits = 8,
+		iLayerType = gdi.PFD_MAIN_PLANE,
+	}) ---@diagnostic disable-line # ffi.new isn't typed properly
+end
+
+return gdi
