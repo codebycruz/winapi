@@ -6,6 +6,7 @@ ffi.cdef([[#embed "kernel32/ffi/ffidefs.h"]])
 ---@field GetModuleHandleA fun(lpModuleName: string?): winapi.kernel32.ffi.HMODULE?
 ---@field GetLastError fun(): number
 ---@field FormatMessageA fun(dwFlags: number, lpSource: ffi.cdata*, dwMessageId: number, dwLanguageId: number, lpBuffer: ffi.cdata*, nSize: number, Arguments: ffi.cdata*): number
+---@field Sleep fun(dwMilliseconds: number): nil
 local C = ffi.load("kernel32")
 
 ---@class winapi.kernel32: winapi.kernel32.Enums
@@ -18,6 +19,7 @@ end
 
 kernel32.getModuleHandle = C.GetModuleHandleA
 kernel32.getLastError = C.GetLastError
+kernel32.sleep = C.Sleep
 
 ---@return string
 function kernel32.getLastErrorMessage()
