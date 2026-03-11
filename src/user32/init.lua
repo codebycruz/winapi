@@ -2,212 +2,90 @@ local ffi = require("ffi")
 
 ffi.cdef([[#embed "user32/ffi/ffidefs.h"]])
 
----@class user32.HWND: ffi.cdata*
-
----@class user32.MSG: ffi.cdata*
----@field hwnd user32.HWND
----@field message number
----@field wParam number
----@field lParam number
----@field time number
----@field pt { x: number, y: number }
----@field lPrivate number
-
----@alias user32.WNDPROC fun(hWnd: user32.HWND, uMsg: number, wParam: number, lParam: number): number
-
----@class user32.WNDCLASSEXA: ffi.cdata*
----@field lpfnWndProc userdata
----@field hInstance userdata
----@field lpszClassName string
----@field hCursor userdata
----@field hIcon userdata
----@field hIconSm userdata
----@field cbSize number
----@field hbrBackground userdata
----@field style number
-
----@class user32.HDC: ffi.cdata*
-
----@class user32.RECT: ffi.cdata*
----@field left number
----@field top number
----@field right number
----@field bottom number
-
----@class user32.LPCSTR: ffi.cdata*
-
+---@class winapi.user32.Fns
+---@field CreateWindowExA fun(dwExStyle: number, lpClassName: string, lpWindowName: string, dwStyle: number, X: number, Y: number, nWidth: number, nHeight: number, hWndParent: userdata?, hMenu: userdata?, hInstance: userdata?, lpParam: userdata?): winapi.user32.ffi.HWND?
+---@field DestroyWindow fun(hWnd: winapi.user32.ffi.HWND): number
+---@field ShowWindow fun(hWnd: winapi.user32.ffi.HWND, nCmdShow: number): number
+---@field UpdateWindow fun(hWnd: winapi.user32.ffi.HWND): number
+---@field SetWindowTextA fun(hWnd: winapi.user32.ffi.HWND, lpString: string): number
+---@field RegisterClassExA fun(lpWndClass: winapi.user32.ffi.WNDCLASSEXA): number
+---@field SetCursor fun(hCursor: ffi.cdata*): ffi.cdata*
+---@field PeekMessageA fun(lpMsg: ffi.cdata*, hWnd: ffi.cdata*, wMsgFilterMin: number, wMsgFilterMax: number, wRemoveMsg: number): number
+---@field GetMessageA fun(lpMsg: ffi.cdata*, hWnd: ffi.cdata*, wMsgFilterMin: number, wMsgFilterMax: number): number
+---@field TranslateMessage fun(lpMsg: ffi.cdata*): number
+---@field DispatchMessageA fun(lpMsg: ffi.cdata*): number
+---@field PostQuitMessage fun(nExitCode: number): nil
+---@field GetDC fun(hwnd: winapi.user32.ffi.HWND): winapi.user32.ffi.HDC
+---@field DefWindowProcA fun(hwnd: winapi.user32.ffi.HWND, Msg: number, wParam: number, lParam: number): number
+---@field LoadCursorA fun(hInstance: ffi.cdata*, lpCursorName: string | winapi.user32.ffi.LPCSTR): ffi.cdata*
+---@field LoadIconA fun(hInstance: ffi.cdata*, lpIconName: string | winapi.user32.ffi.LPCSTR): ffi.cdata*
+---@field GetSysColorBrush fun(nIndex: number): ffi.cdata*
+---@field AdjustWindowRect fun(lpRect: winapi.user32.ffi.RECT, dwStyle: number, bMenu: boolean): number
 local C = ffi.load("user32")
 
-return {
-	IDC_ARROW = ffi.cast("LPCSTR", 32512) --[[@as user32.LPCSTR]],
-	IDC_HAND = ffi.cast("LPCSTR", 32649) --[[@as user32.LPCSTR]],
-	IDI_APPLICATION = ffi.cast("LPCSTR", 32512) --[[@as user32.LPCSTR]],
+---@class winapi.user32
+local user32 = {}
 
-	COLOR_WINDOW = 5,
+user32.createWindow = C.CreateWindowExA
+user32.destroyWindow = C.DestroyWindow
+user32.setWindowText = C.SetWindowTextA
+user32.registerClass = C.RegisterClassExA
+user32.setCursor = C.SetCursor
+user32.getMessage = C.GetMessageA
+user32.translateMessage = C.TranslateMessage
+user32.dispatchMessage = C.DispatchMessageA
+user32.postQuitMessage = C.PostQuitMessage
+user32.getDC = C.GetDC
+user32.defWindowProc = C.DefWindowProcA
+user32.loadCursor = C.LoadCursorA
+user32.loadIcon = C.LoadIconA
+user32.getSysColorBrush = C.GetSysColorBrush
 
-	CS_HREDRAW = 0x0002,
-	CS_VREDRAW = 0x0001,
+---@param wnd winapi.user32.ffi.HWND
+---@param show winapi.user32.ShowWindow
+function user32.showWindow(wnd, show)
+	return C.ShowWindow(wnd, show) ~= 0
+end
 
-	WS_BORDER = 0x00800000,
-	WS_CAPTION = 0x00C00000,
-	WS_CHILD = 0x40000000,
-	WS_CHILDWINDOW = 0x40000000,
-	WS_CLIPCHILDREN = 0x02000000,
-	WS_CLIPSIBLINGS = 0x04000000,
-	WS_DISABLED = 0x08000000,
-	WS_DLGFRAME = 0x00400000,
-	WS_GROUP = 0x00020000,
-	WS_HSCROLL = 0x00100000,
-	WS_ICONIC = 0x20000000,
-	WS_MAXIMIZE = 0x01000000,
-	WS_MAXIMIZEBOX = 0x00010000,
-	WS_MINIMIZE = 0x20000000,
-	WS_MINIMIZEBOX = 0x00020000,
-	WS_OVERLAPPED = 0x00000000,
-	WS_OVERLAPPEDWINDOW = 0x00CF0000,
-	WS_POPUP = 0x80000000,
-	WS_POPUPWINDOW = 0x80880000,
-	WS_SIZEBOX = 0x00040000,
-	WS_SYSMENU = 0x00080000,
-	WS_TABSTOP = 0x00010000,
-	WS_THICKFRAME = 0x00040000,
-	WS_VISIBLE = 0x10000000,
-	WS_VSCROLL = 0x00200000,
+---@param wnd winapi.user32.ffi.HWND
+function user32.updateWindow(wnd)
+	return C.UpdateWindow(wnd) ~= 0
+end
 
-	WM_CREATE = 0x0001,
-	WM_DESTROY = 0x0002,
-	WM_CLOSE = 0x0010,
-	WM_QUIT = 0x0012,
-	WM_PAINT = 0x000F,
-	WM_SIZE = 0x0005,
-	WM_SETCURSOR = 0x0020,
-	WM_MOUSEMOVE = 0x0200,
-	WM_LBUTTONDOWN = 0x0201,
-	WM_LBUTTONUP = 0x0202,
-	WM_RBUTTONDOWN = 0x0204,
-	WM_RBUTTONUP = 0x0205,
-	WM_KEYDOWN = 0x0100,
-	WM_KEYUP = 0x0101,
-	WM_CHAR = 0x0102,
-	WM_SYSKEYDOWN = 0x0104,
-	WM_SYSKEYUP = 0x0105,
-	WM_SYSCHAR = 0x0106,
-	WM_ERASEBKGND = 0x0014,
-	WM_NCDESTROY = 0x0082,
-	WM_ACTIVATE = 0x0006,
-	WM_ACTIVATEAPP = 0x001C,
-	WM_SETFOCUS = 0x0007,
-	WM_KILLFOCUS = 0x0008,
-	WM_GETMINMAXINFO = 0x0024,
-	WM_COMMAND = 0x0111,
-	WM_SYSCOMMAND = 0x0112,
-	WM_TIMER = 0x0113,
-	WM_CTLCOLORBTN = 0x0135,
-	WM_CTLCOLOREDIT = 0x0133,
-	WM_CTLCOLORLISTBOX = 0x0134,
-	WM_CTLCOLORMSGBOX = 0x0132,
-	WM_CTLCOLORSCROLLBAR = 0x0136,
-	WM_CTLCOLORSTATIC = 0x0138,
+---@param lpMsg winapi.user32.ffi.MSG
+---@param hWnd winapi.user32.ffi.HWND?
+---@param wMsgFilterMin number
+---@param wMsgFilterMax number
+---@param wRemoveMsg number
+function user32.peekMessage(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg)
+	return C.PeekMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg) ~= 0
+end
 
-	PM_REMOVE = 0x0001,
+---@param rect winapi.user32.ffi.RECT
+---@param style number
+---@param hasMenu boolean
+function user32.adjustWindowRect(rect, style, hasMenu)
+	return C.AdjustWindowRect(rect, style, hasMenu and 1 or 0) ~= 0
+end
 
-	---@enum user32.ShowWindow
-	ShowWindow = {
-		HIDE = 0,
-		SHOWNORMAL = 1,
-		SHOWMINIMIZED = 2,
-		SHOWMAXIMIZED = 3,
-		SHOWNOACTIVATE = 4,
-		SHOW = 5,
-		MINIMIZE = 6,
-		SHOWMINNOACTIVE = 7,
-		SHOWNA = 8,
-		RESTORE = 9,
-		SHOWDEFAULT = 10,
-		FORCEMINIMIZE = 11,
-	},
+---@type fun(): winapi.user32.ffi.MSG
+user32.Msg = ffi.typeof("MSG") ---@diagnostic disable-line # ffi.cast isn't typed properly
 
-	CW_USEDEFAULT = 0x80000000,
+---@return winapi.user32.ffi.WNDCLASSEXA
+function user32.WndClassEx()
+	return ffi.new("WNDCLASSEXA", { cbSize = ffi.sizeof("WNDCLASSEXA") }) ---@diagnostic disable-line # ffi.cast isn't typed properly
+end
 
-	---@type fun(dwExStyle: number, lpClassName: string, lpWindowName: string, dwStyle: number, X: number, Y: number, nWidth: number, nHeight: number, hWndParent: userdata?, hMenu: userdata?, hInstance: userdata?, lpParam: userdata?): user32.HWND?
-	createWindow = C.CreateWindowExA,
+---@param fn winapi.user32.ffi.WNDPROC
+---@return winapi.user32.ffi.WNDPROC
+function user32.WndProc(fn)
+	return ffi.cast("WNDPROC", fn) ---@diagnostic disable-line # ffi.cast isn't typed properly
+end
 
-	---@type fun(hWnd: user32.HWND): number
-	destroyWindow = C.DestroyWindow,
+---@type fun(): winapi.user32.ffi.RECT
+user32.Rect = ffi.typeof("RECT") ---@diagnostic disable-line # ffi.cast isn't typed properly
 
-	---@type fun(hWnd: user32.HWND, nCmdShow: number): boolean
-	showWindow = function(hWnd, nCmdShow)
-		return C.ShowWindow(hWnd, nCmdShow) ~= 0
-	end,
+---@type fun(s: winapi.user32.ffi.LPCSTR|integer?): winapi.user32.ffi.LPCSTR
+user32.LPCSTR = ffi.typeof("LPCSTR") ---@diagnostic disable-line # ffi.cast isn't typed properly
 
-	---@type fun(hWnd: user32.HWND): boolean
-	updateWindow = function(hWnd)
-		return C.UpdateWindow(hWnd) ~= 0
-	end,
-
-	---@type fun(hWnd: user32.HWND, lpString: string): number
-	setWindowText = C.SetWindowTextA,
-
-	---@type fun(lpWndClass: user32.WNDCLASSEXA): number
-	registerClass = C.RegisterClassExA,
-
-	---@type fun(hCursor: userdata): userdata
-	setCursor = C.SetCursor,
-
-	---@type fun(lpMsg: userdata, hWnd: userdata?, wMsgFilterMin: number, wMsgFilterMax: number, wRemoveMsg: number): boolean
-	peekMessage = function(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg)
-		return C.PeekMessageA(lpMsg, hWnd or nil, wMsgFilterMin, wMsgFilterMax, wRemoveMsg) ~= 0
-	end,
-
-	---@type fun(lpMsg: ffi.cdata*, hWnd: user32.HWND?, wMsgFilterMin: number, wMsgFilterMax: number): number
-	getMessage = C.GetMessageA,
-
-	---@type fun(lpMsg: ffi.cdata*): number
-	translateMessage = C.TranslateMessage,
-
-	---@type fun(lpMsg: ffi.cdata*): number
-	dispatchMessage = C.DispatchMessageA,
-
-	---@type fun(nExitCode: number)
-	postQuitMessage = C.PostQuitMessage,
-
-	newMsg = function()
-		return ffi.new("MSG") --[[@as user32.MSG]]
-	end,
-
-	---@type fun(): user32.WNDCLASSEXA
-	newWndClassEx = function()
-		---@diagnostic disable-next-line: missing-return-value # ffi.new isn't typed properly for some reason
-		return ffi.new("WNDCLASSEXA", { cbSize = ffi.sizeof("WNDCLASSEXA") })
-	end,
-
-	---@type fun(fn: user32.WNDPROC): userdata
-	newWndProc = function(fn)
-		return ffi.cast("WNDPROC", fn)
-	end,
-
-	---@type fun(hwnd: user32.HWND): user32.HDC
-	getDC = C.GetDC,
-
-	---@type fun(hwnd: user32.HWND, Msg: number, wParam: number, lParam: number): number
-	defWindowProc = C.DefWindowProcA,
-
-	---@type fun(hInstance: userdata?, lpCursorName: string | user32.LPCSTR): userdata
-	loadCursor = C.LoadCursorA,
-
-	---@type fun(hInstance: userdata?, lpIconName: string | user32.LPCSTR): userdata
-	loadIcon = C.LoadIconA,
-
-	---@type fun(nIndex: number): userdata
-	getSysColorBrush = C.GetSysColorBrush,
-
-	---@type fun(lpRect: user32.RECT, dwStyle: number, bMenu: boolean): boolean
-	adjustWindowRect = function(lpRect, dwStyle, bMenu)
-		return C.AdjustWindowRect(lpRect, dwStyle, bMenu and 1 or 0) ~= 0
-	end,
-
-	newRect = function()
-		---@type user32.RECT
-		return ffi.new("RECT")
-	end,
-}
+return user32
