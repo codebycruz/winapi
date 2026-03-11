@@ -117,4 +117,6 @@ return function(user32)
 
 	-- Create window default
 	enums.CW_USEDEFAULT = 0x80000000
+
+	return enums
 end

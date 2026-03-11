@@ -23,7 +23,7 @@ ffi.cdef([[#embed "user32/ffi/ffidefs.h"]])
 ---@field AdjustWindowRect fun(lpRect: winapi.user32.ffi.RECT, dwStyle: number, bMenu: boolean): number
 local C = ffi.load("user32")
 
----@class winapi.user32
+---@class winapi.user32: winapi.user32.Enums
 local user32 = {}
 
 user32.createWindow = C.CreateWindowExA
@@ -87,5 +87,11 @@ user32.Rect = ffi.typeof("RECT") ---@diagnostic disable-line # ffi.cast isn't ty
 
 ---@type fun(s: winapi.user32.ffi.LPCSTR|integer?): winapi.user32.ffi.LPCSTR
 user32.LPCSTR = ffi.typeof("LPCSTR") ---@diagnostic disable-line # ffi.cast isn't typed properly
+
+-- Load and merge enums
+local enums = require("winapi.user32.ffi.enums")(user32)
+for k, v in pairs(enums) do
+	user32[k] = v
+end
 
 return user32
