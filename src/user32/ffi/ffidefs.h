@@ -88,3 +88,12 @@ LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 HDC GetDC(HWND hWnd);
 HICON LoadIconA(HMODULE hInstance, LPCSTR lpIconName);
 HBRUSH GetSysColorBrush(int nIndex);
+
+/* Input */
+short GetKeyState(int nVirtKey);
+short GetAsyncKeyState(int vKey);
+BOOL GetCursorPos(POINT *lpPoint);
+BOOL SetCursorPos(int X, int Y);
+int ShowCursor(BOOL bShow);
+HWND SetCapture(HWND hWnd);
+BOOL ReleaseCapture(void);

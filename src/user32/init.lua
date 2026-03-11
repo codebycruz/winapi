@@ -21,6 +21,13 @@ ffi.cdef([[#embed "user32/ffi/ffidefs.h"]])
 ---@field LoadIconA fun(hInstance: ffi.cdata*, lpIconName: string | winapi.user32.ffi.LPCSTR): ffi.cdata*
 ---@field GetSysColorBrush fun(nIndex: number): ffi.cdata*
 ---@field AdjustWindowRect fun(lpRect: winapi.user32.ffi.RECT, dwStyle: number, bMenu: boolean): number
+---@field GetKeyState fun(nVirtKey: number): number
+---@field GetAsyncKeyState fun(vKey: number): number
+---@field GetCursorPos fun(lpPoint: winapi.user32.ffi.POINT): number
+---@field SetCursorPos fun(X: number, Y: number): number
+---@field ShowCursor fun(bShow: number): number
+---@field SetCapture fun(hWnd: winapi.user32.ffi.HWND): winapi.user32.ffi.HWND?
+---@field ReleaseCapture fun(): number
 local C = ffi.load("user32")
 
 ---@class winapi.user32: winapi.user32.Enums
@@ -40,6 +47,9 @@ user32.defWindowProc = C.DefWindowProcA
 user32.loadCursor = C.LoadCursorA
 user32.loadIcon = C.LoadIconA
 user32.getSysColorBrush = C.GetSysColorBrush
+user32.getKeyState = C.GetKeyState
+user32.getAsyncKeyState = C.GetAsyncKeyState
+user32.setCapture = C.SetCapture
 
 ---@param wnd winapi.user32.ffi.HWND
 ---@param show winapi.user32.ShowWindow
@@ -68,6 +78,30 @@ function user32.adjustWindowRect(rect, style, hasMenu)
 	return C.AdjustWindowRect(rect, style, hasMenu and 1 or 0) ~= 0
 end
 
+---@param lpPoint winapi.user32.ffi.POINT
+---@return boolean
+function user32.getCursorPos(lpPoint)
+	return C.GetCursorPos(lpPoint) ~= 0
+end
+
+---@param x number
+---@param y number
+---@return boolean
+function user32.setCursorPos(x, y)
+	return C.SetCursorPos(x, y) ~= 0
+end
+
+---@param show boolean
+---@return number
+function user32.showCursor(show)
+	return C.ShowCursor(show and 1 or 0)
+end
+
+---@return boolean
+function user32.releaseCapture()
+	return C.ReleaseCapture() ~= 0
+end
+
 ---@type fun(): winapi.user32.ffi.MSG
 user32.Msg = ffi.typeof("MSG") ---@diagnostic disable-line # ffi.cast isn't typed properly
 
@@ -84,6 +118,9 @@ end
 
 ---@type fun(): winapi.user32.ffi.RECT
 user32.Rect = ffi.typeof("RECT") ---@diagnostic disable-line # ffi.cast isn't typed properly
+
+---@type fun(): winapi.user32.ffi.POINT
+user32.Point = ffi.typeof("POINT") ---@diagnostic disable-line # ffi.typeof isn't typed properly
 
 ---@type fun(s: winapi.user32.ffi.LPCSTR?): winapi.user32.ffi.LPCSTR
 user32.LPCSTR = ffi.typeof("LPCSTR") ---@diagnostic disable-line # ffi.cast isn't typed properly

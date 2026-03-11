@@ -35,3 +35,7 @@
 ---@field bottom number
 
 ---@class winapi.user32.ffi.LPCSTR: ffi.cdata*
+
+---@class winapi.user32.ffi.POINT: ffi.cdata*
+---@field x number
+---@field y number
