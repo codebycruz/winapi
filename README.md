@@ -1,5 +1,7 @@
 # winapi
 
+[![Tests](https://github.com/codebycruz/winapi/actions/workflows/tests.yml/badge.svg)](https://github.com/codebycruz/winapi/actions/workflows/tests.yml)
+
 Windows API bindings for LuaJIT.
 
 ## Installation
