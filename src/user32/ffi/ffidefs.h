@@ -70,6 +70,7 @@ BOOL ShowWindow(HWND hWnd, int nCmdShow);
 BOOL UpdateWindow(HWND hWnd);
 BOOL SetWindowTextA(HWND hWnd, LPCSTR lpString);
 ATOM RegisterClassExA(const WNDCLASSEXA *lpWndClass);
+BOOL UnregisterClassA(LPCSTR lpClassName, HINSTANCE hInstance);
 
 /* Cursor */
 HCURSOR SetCursor(HCURSOR hCursor);

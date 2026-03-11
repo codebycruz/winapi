@@ -9,6 +9,7 @@ ffi.cdef([[#embed "user32/ffi/ffidefs.h"]])
 ---@field UpdateWindow fun(hWnd: winapi.user32.ffi.HWND): number
 ---@field SetWindowTextA fun(hWnd: winapi.user32.ffi.HWND, lpString: string): number
 ---@field RegisterClassExA fun(lpWndClass: winapi.user32.ffi.WNDCLASSEXA): number
+---@field UnregisterClassA fun(lpClassName: string, hInstance: ffi.cdata*): number
 ---@field SetCursor fun(hCursor: ffi.cdata*): ffi.cdata*
 ---@field PeekMessageA fun(lpMsg: ffi.cdata*, hWnd: ffi.cdata*, wMsgFilterMin: number, wMsgFilterMax: number, wRemoveMsg: number): number
 ---@field GetMessageA fun(lpMsg: ffi.cdata*, hWnd: ffi.cdata*, wMsgFilterMin: number, wMsgFilterMax: number): number
@@ -37,6 +38,7 @@ user32.createWindow = C.CreateWindowExA
 user32.destroyWindow = C.DestroyWindow
 user32.setWindowText = C.SetWindowTextA
 user32.registerClass = C.RegisterClassExA
+user32.unregisterClass = C.UnregisterClassA
 user32.setCursor = C.SetCursor
 user32.getMessage = C.GetMessageA
 user32.translateMessage = C.TranslateMessage
