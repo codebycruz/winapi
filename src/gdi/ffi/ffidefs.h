@@ -1,0 +1,38 @@
+typedef unsigned short WORD;
+typedef unsigned long DWORD;
+typedef unsigned char BYTE;
+typedef void *HDC;
+typedef int BOOL;
+typedef struct {
+  WORD nSize;
+  WORD nVersion;
+  DWORD dwFlags;
+  BYTE iPixelType;
+  BYTE cColorBits;
+  BYTE cRedBits;
+  BYTE cRedShift;
+  BYTE cGreenBits;
+  BYTE cGreenShift;
+  BYTE cBlueBits;
+  BYTE cBlueShift;
+  BYTE cAlphaBits;
+  BYTE cAlphaShift;
+  BYTE cAccumBits;
+  BYTE cAccumRedBits;
+  BYTE cAccumGreenBits;
+  BYTE cAccumBlueBits;
+  BYTE cAccumAlphaBits;
+  BYTE cDepthBits;
+  BYTE cStencilBits;
+  BYTE cAuxBuffers;
+  BYTE iLayerType;
+  BYTE bReserved;
+  DWORD dwLayerMask;
+  DWORD dwVisibleMask;
+  DWORD dwDamageMask;
+} PIXELFORMATDESCRIPTOR;
+
+int ChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR *ppfd);
+BOOL SetPixelFormat(HDC hdc, int iPixelFormat,
+                    const PIXELFORMATDESCRIPTOR *ppfd);
+void SwapBuffers(HDC hdc);

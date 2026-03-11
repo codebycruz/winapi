@@ -1,3 +1,4 @@
+---@class winapi
 local winapi = {}
 
 winapi.gdi = require("winapi.gdi")
