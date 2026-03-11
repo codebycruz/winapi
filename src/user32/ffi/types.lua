@@ -1,15 +1,19 @@
 ---@class winapi.user32.ffi.HWND: ffi.cdata*
 
+---@class winapi.user32.ffi.WPARAM: ffi.cdata*
+
+---@class winapi.user32.ffi.LPARAM: ffi.cdata*
+
 ---@class winapi.user32.ffi.MSG: ffi.cdata*
----@field hwnd user32.HWND
+---@field hwnd winapi.user32.ffi.HWND
 ---@field message number
----@field wParam number
----@field lParam number
+---@field wParam winapi.user32.ffi.WPARAM
+---@field lParam winapi.user32.ffi.LPARAM
 ---@field time number
 ---@field pt { x: number, y: number }
 ---@field lPrivate number
 
----@alias winapi.user32.ffi.WNDPROC fun(hWnd: user32.HWND, uMsg: number, wParam: number, lParam: number): number
+---@alias winapi.user32.ffi.WNDPROC fun(hWnd: winapi.user32.ffi.HWND, uMsg: number, wParam: winapi.user32.ffi.WPARAM, lParam: winapi.user32.ffi.LPARAM): number
 
 ---@class winapi.user32.ffi.WNDCLASSEXA: ffi.cdata*
 ---@field lpfnWndProc ffi.cdata*

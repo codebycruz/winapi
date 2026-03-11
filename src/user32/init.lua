@@ -16,7 +16,7 @@ ffi.cdef([[#embed "user32/ffi/ffidefs.h"]])
 ---@field DispatchMessageA fun(lpMsg: ffi.cdata*): number
 ---@field PostQuitMessage fun(nExitCode: number): nil
 ---@field GetDC fun(hwnd: winapi.user32.ffi.HWND): winapi.user32.ffi.HDC
----@field DefWindowProcA fun(hwnd: winapi.user32.ffi.HWND, Msg: number, wParam: number, lParam: number): number
+---@field DefWindowProcA fun(hwnd: winapi.user32.ffi.HWND, Msg: number, wParam: winapi.user32.ffi.WPARAM, lParam: winapi.user32.ffi.LPARAM): number
 ---@field LoadCursorA fun(hInstance: ffi.cdata*, lpCursorName: string | winapi.user32.ffi.LPCSTR): ffi.cdata*
 ---@field LoadIconA fun(hInstance: ffi.cdata*, lpIconName: string | winapi.user32.ffi.LPCSTR): ffi.cdata*
 ---@field GetSysColorBrush fun(nIndex: number): ffi.cdata*
@@ -87,6 +87,39 @@ user32.Rect = ffi.typeof("RECT") ---@diagnostic disable-line # ffi.cast isn't ty
 
 ---@type fun(s: winapi.user32.ffi.LPCSTR?): winapi.user32.ffi.LPCSTR
 user32.LPCSTR = ffi.typeof("LPCSTR") ---@diagnostic disable-line # ffi.cast isn't typed properly
+
+-- Macro equivalents for extracting values from wParam/lParam
+-- These mimic the Windows API macros GET_X_LPARAM, GET_Y_LPARAM, LOWORD, HIWORD
+
+---@param lParam winapi.user32.ffi.LPARAM
+---@return number
+function user32.GET_X_LPARAM(lParam)
+	return ffi.cast("short", bit.band(tonumber(lParam), 0xFFFF))
+end
+
+---@param lParam winapi.user32.ffi.LPARAM
+---@return number
+function user32.GET_Y_LPARAM(lParam)
+	return ffi.cast("short", bit.rshift(tonumber(lParam), 16))
+end
+
+---@param value winapi.user32.ffi.WPARAM|winapi.user32.ffi.LPARAM
+---@return number
+function user32.LOWORD(value)
+	return bit.band(tonumber(value), 0xFFFF)
+end
+
+---@param value winapi.user32.ffi.WPARAM|winapi.user32.ffi.LPARAM
+---@return number
+function user32.HIWORD(value)
+	return bit.rshift(tonumber(value), 16)
+end
+
+---@param wParam winapi.user32.ffi.WPARAM
+---@return number
+function user32.GET_WHEEL_DELTA_WPARAM(wParam)
+	return ffi.cast("short", bit.rshift(tonumber(wParam), 16))
+end
 
 -- Load and merge enums
 local enums = require("winapi.user32.ffi.enums")(user32)
